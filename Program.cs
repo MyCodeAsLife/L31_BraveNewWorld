@@ -7,26 +7,29 @@ namespace L31_BraveNewWorld
     {
         static void Main(string[] args)
         {
+            string path = "map.txt";
+
             // Для тестирования можно раскоментировать этот участок и закоментировать загрузку карты из файла
             /*            char[,] map =
                         {
-                                        { '#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#' },
-                                        { '#',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
-                                        { '#','X','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
-                                        { '#',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
-                                        { '#',' ','#',' ',' ',' ',' ',' ',' ',' ','#','#','#',' ',' ',' ',' ','#' },
-                                        { '#',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','X','#',' ',' ',' ',' ','#' },
-                                        { '#',' ','#',' ',' ',' ',' ',' ',' ',' ','#',' ','#',' ',' ',' ',' ','#' },
-                                        { '#',' ','#',' ',' ',' ',' ',' ',' ',' ','#',' ','#',' ',' ',' ',' ','#' },
-                                        { '#',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
-                                        { '#',' ','#','#','#','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
-                                        { '#',' ',' ',' ',' ','X','#',' ',' ',' ',' ',' ',' ',' ',' ','X',' ','#' },
-                                        { '#',' ',' ',' ',' ',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
-                                        { '#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#' },
+                                                    { '#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#' },
+                                                    { '#',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
+                                                    { '#','X','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
+                                                    { '#',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
+                                                    { '#',' ','#',' ',' ',' ',' ',' ',' ',' ','#','#','#',' ',' ',' ',' ','#' },
+                                                    { '#',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','X','#',' ',' ',' ',' ','#' },
+                                                    { '#',' ','#',' ',' ',' ',' ',' ',' ',' ','#',' ','#',' ',' ',' ',' ','#' },
+                                                    { '#',' ','#',' ',' ',' ',' ',' ',' ',' ','#',' ','#',' ',' ',' ',' ','#' },
+                                                    { '#',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
+                                                    { '#',' ','#','#','#','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
+                                                    { '#',' ',' ',' ',' ','X','#',' ',' ',' ',' ',' ',' ',' ',' ','X',' ','#' },
+                                                    { '#',' ',' ',' ',' ',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#' },
+                                                    { '#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#' },
                         };*/
-            char[,] map = ReadMap("map.txt");
+            char[,] map = ReadMap(path);
             char[] bag = new char[0];
 
+            char wall = '#';
             char player = '@';
             char pickUpItem = 'X';
             char remainSymbol = 'O';
@@ -47,7 +50,7 @@ namespace L31_BraveNewWorld
 
                 Console.SetCursorPosition(userX, userY);
                 Console.Write(player);
-                MovePlayer(map, player, ref userX, ref userY);
+                MovePlayer(map, player, ref userX, ref userY, wall);
 
                 if (map[userX, userY] == pickUpItem)
                     PickUpItem(map, userX, userY, ref bag, pickUpItem, remainSymbol);
@@ -94,7 +97,7 @@ namespace L31_BraveNewWorld
 
         static char[,] ReadMap(string path)
         {
-            string[] file = File.ReadAllLines("map.txt");
+            string[] file = File.ReadAllLines(path);
             char[,] map = new char[GetMaxLenghtOfLines(file), file.Length];
 
             for (int x = 0; x < map.GetLength(0); x++)
@@ -137,7 +140,7 @@ namespace L31_BraveNewWorld
             return maxLenght;
         }
 
-        static void MovePlayer(char[,] map, char player, ref int positionX, ref int positionY)
+        static void MovePlayer(char[,] map, char player, ref int positionX, ref int positionY, char wall)
         {
             const int X = 0;
             const int Y = 1;
@@ -145,7 +148,7 @@ namespace L31_BraveNewWorld
             ConsoleKeyInfo pressKey = Console.ReadKey();
             int[] offset = GetOffset(pressKey);
 
-            if (map[positionX + offset[X], positionY + offset[Y]] != '#')
+            if (map[positionX + offset[X], positionY + offset[Y]] != wall)
             {
                 positionX += offset[X];
                 positionY += offset[Y];

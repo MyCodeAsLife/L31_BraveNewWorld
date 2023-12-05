@@ -31,7 +31,7 @@ namespace L31_BraveNewWorld
 
             char wall = '#';
             char player = '@';
-            char pickUpItem = 'X';
+            char item = 'X';
             char remainSymbol = 'O';
 
             int userX = 1;
@@ -50,14 +50,14 @@ namespace L31_BraveNewWorld
 
                 Console.SetCursorPosition(userX, userY);
                 Console.Write(player);
-                MovePlayer(map, player, ref userX, ref userY, wall);
+                UpdatePlayerState(map, ref userX, ref userY, wall);
 
-                if (map[userX, userY] == pickUpItem)
-                    PickUpItem(map, userX, userY, ref bag, pickUpItem, remainSymbol);
+                if (map[userX, userY] == item)
+                    bag = PickUpItem(map, userX, userY, bag, item, remainSymbol);
             }
         }
 
-        static int[] GetOffset(ConsoleKeyInfo pressKey)
+        static int[] GetDirection(ConsoleKeyInfo pressKey)
         {
             int[] position = new int[2];
 
@@ -83,7 +83,7 @@ namespace L31_BraveNewWorld
             return position;
         }
 
-        static void PickUpItem(char[,] map, int positionX, int positionY, ref char[] bag, char pickUpItem, char remainSymbol)
+        static char[] PickUpItem(char[,] map, int positionX, int positionY, char[] bag, char pickUpItem, char remainSymbol)
         {
             map[positionX, positionY] = remainSymbol;
             char[] tempBag = new char[bag.Length + 1];
@@ -92,7 +92,7 @@ namespace L31_BraveNewWorld
                 tempBag[i] = bag[i];
 
             tempBag[bag.Length] = pickUpItem;
-            bag = tempBag;
+            return tempBag;
         }
 
         static char[,] ReadMap(string path)
@@ -140,19 +140,24 @@ namespace L31_BraveNewWorld
             return maxLenght;
         }
 
-        static void MovePlayer(char[,] map, char player, ref int positionX, ref int positionY, char wall)
+        static void UpdatePlayerState(char[,] map, ref int positionX, ref int positionY, char wall)
         {
-            const int X = 0;
-            const int Y = 1;
-
             ConsoleKeyInfo pressKey = Console.ReadKey();
-            int[] offset = GetOffset(pressKey);
+            int[] direction = GetDirection(pressKey);
 
-            if (map[positionX + offset[X], positionY + offset[Y]] != wall)
-            {
-                positionX += offset[X];
-                positionY += offset[Y];
-            }
+            if (CanMovedPlayer(map, positionX + direction[0], positionY + direction[1], wall))
+                MovePlayer(ref positionX, ref positionY, direction);
+        }
+
+        private static void MovePlayer(ref int positionX, ref int positionY, int[] direction)
+        {
+            positionX += direction[0];
+            positionY += direction[1];
+        }
+
+        static bool CanMovedPlayer(char[,] map, int positionX, int positionY, char wall)
+        {
+            return map[positionX, positionY] != wall;
         }
     }
 }
